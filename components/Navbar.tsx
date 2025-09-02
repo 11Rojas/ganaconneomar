@@ -28,9 +28,15 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
-              className="text-white hover:text-yellow-400 transition-all duration-300 font-medium hover:scale-105"
+              className="text-white hover:text-[#febd59] transition-all duration-300 font-medium hover:scale-105"
             >
               Inicio
+            </Link>
+            <Link
+              href="/verify"
+              className="text-white hover:text-[#febd59] transition-all duration-300 font-medium hover:scale-105"
+            >
+              Verificar Tickets
             </Link>
           </div>
 
@@ -59,6 +65,13 @@ export default function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 Inicio
+              </Link>
+              <Link
+                href="/verify"
+                className="block px-4 py-3 text-white hover:text-[#febd59] hover:bg-[#febd59]/10 transition-all duration-300 rounded-lg font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Verificar Tickets
               </Link>
        
             </div>

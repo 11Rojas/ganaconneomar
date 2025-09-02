@@ -181,23 +181,23 @@ export default function RaffleCard({ raffle }: { raffle: Raffle }) {
   }
 
   return (
-    <div className=" mx-auto p-4 space-y-6">
-      {/* Banner */}
-      <div className="relative rounded-lg overflow-hidden">
-        <Image
-          src={raffle.image || "/placeholder.svg"}
-          alt={raffle.title}
-          width={800}
-          height={400}
-          className="w-full h-64 object-cover"
-        />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-          <h2 className="text-2xl font-bold text-white">{raffle.title}</h2>
-          <p className="text-gray-300">{raffle.description}</p>
+    <div className="mx-auto p-4 space-y-6">
+      {/* Progress Bar */}
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-bold text-white">Progreso de la Rifa</h3>
+          <span className="text-[#febd59] font-semibold">{soldPercentage.toFixed(1)}%</span>
         </div>
-        <Badge className="absolute top-3 right-3 bg-[#febd59] text-black">
-          {raffle.status === "active" ? "Activa" : raffle.status === "completed" ? "Finalizada" : "Cancelada"}
-        </Badge>
+        <div className="w-full bg-gray-700 rounded-full h-3">
+          <div 
+            className="bg-gradient-to-r from-[#febd59] to-[#e6a84f] h-3 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${soldPercentage}%` }}
+          ></div>
+        </div>
+        <div className="flex justify-between text-sm text-gray-400">
+          <span>{raffle.soldNumbers?.length || 0} vendidos</span>
+          <span>{raffle.totalNumbers} total</span>
+        </div>
       </div>
 
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
@@ -392,6 +392,23 @@ export default function RaffleCard({ raffle }: { raffle: Raffle }) {
             {isSubmitting ? "Procesando..." : `Comprar ${quantity} ticket${quantity > 1 ? 's' : ''}`}
           </Button>
         </form>
+
+        {/* Verificador de Tickets */}
+        <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-[#febd59]/20">
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-white mb-2">¿Ya compraste tickets?</h4>
+            <p className="text-gray-400 text-sm mb-4">
+              Verifica tus tickets ingresando tu email de compra
+            </p>
+            <Button
+              onClick={() => window.open('/verify', '_blank')}
+              className="btn-gold-outline w-full"
+            >
+              <Check className="w-4 h-4 mr-2" />
+              Verificar Mis Tickets
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

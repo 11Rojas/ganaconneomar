@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react"
 import PurchaseModal from "./PurchaseModal"
 import type { Raffle } from "@/lib/types"
-import { Instagram, Facebook } from "lucide-react"
+import { Instagram, Facebook, DollarSign } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 import TikTok from "./Tiktok"
 
 export default function FeaturedRaffles() {
@@ -93,52 +95,62 @@ export default function FeaturedRaffles() {
     )
   }
 
-  return (
-    <section id="rifas-destacadas" className="py-16 px-4 bg-gradient-to-b from-black via-gray-900 to-black">
-    <div className="max-w-7xl mx-auto">
-      {/* Sección de Redes Sociales */}
-      <div className="flex justify-center gap-4 mb-8">
-        <a href="https://www.instagram.com/Neomarng" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
-          <Instagram className="w-14 h-14 text-pink-500" />
-        </a>
-        <a href="https://www.facebook.com/neomargregoriotv" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
-          <Facebook className="w-14 h-14 text-blue-500" />
-        </a>
-        <a href="https://www.tiktok.com/@neomar.gregorio" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
-          <TikTok className="w-14 h-14 text-blue-500" />
-        </a>
-      </div>
-
-      <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Rifas <span className="gradient-text">Destacadas</span>
-        </h2>
-        <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
-          No te pierdas estas increíbles oportunidades de ganar premios espectaculares
-        </p>
-      </div>
-
-      {raffles.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-400 text-lg mb-4">No hay rifas activas en este momento</p>
-          <p className="text-gray-500">Vuelve más tarde para ver nuevas rifas</p>
-        </div>
-      ) : (
-        <>
-
-          {/* Listado de rifas */}
-          <div className="grid grid-cols-1 gap-8 w-full">
-            {raffles.map((raffle) => (
-              <div key={raffle._id} className="w-full">
-                <PurchaseModal raffle={raffle} />
+    return (
+    <section id="rifas-destacadas" className="bg-gradient-to-b from-black via-gray-900 to-black">
+      {/* Hero Image Section */}
+      {raffles.length > 0 && (
+        <div className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
+          <Image
+            src={raffles[0].image || "/placeholder.svg"}
+            alt={raffles[0].title}
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+          
+          {/* Content overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+            <div className="max-w-7xl mx-auto">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4">
+                {raffles[0].title}
+              </h1>
+              <p className="text-gray-300 text-lg md:text-xl max-w-3xl mb-6">
+                {raffles[0].description}
+              </p>
+              <div className="flex items-center gap-4">
+                <Badge className="bg-[#febd59] text-black text-lg px-4 py-2">
+                  {raffles[0].status === "active" ? "Activa" : raffles[0].status === "completed" ? "Finalizada" : "Cancelada"}
+                </Badge>
+                <span className="text-white text-lg">
+                  <DollarSign className="w-5 h-5 inline mr-1" />
+                  ${raffles[0].ticketPrice} por ticket
+                </span>
               </div>
-            ))}
+            </div>
           </div>
-        </>
+        </div>
       )}
-    </div>
 
-
-  </section>
+      <div className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          {raffles.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400 text-lg mb-4">No hay rifas activas en este momento</p>
+              <p className="text-gray-500">Vuelve más tarde para ver nuevas rifas</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-8 w-full">
+              {raffles.map((raffle) => (
+                <div key={raffle._id} className="w-full">
+                  <PurchaseModal raffle={raffle} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }

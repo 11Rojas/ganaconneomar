@@ -39,6 +39,11 @@ export default function Footer() {
                   Rifas Activas
                 </Link>
               </li>
+              <li>
+                <Link href="/verify" className="text-gray-400 hover:text-[#febd59] transition-colors">
+                  Verificar Tickets
+                </Link>
+              </li>
       
             </ul>
           </div>
