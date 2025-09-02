@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import PurchaseModal from "./PurchaseModal"
 import type { Raffle } from "@/lib/types"
-import { Instagram, Facebook, DollarSign } from "lucide-react"
+import { Instagram, Facebook, Coins } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import TikTok from "./Tiktok"
@@ -13,6 +13,7 @@ export default function FeaturedRaffles() {
   const [topBuyers, setTopBuyers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [exchangeRate, setExchangeRate] = useState(36) // Default rate
 
 
   useEffect(() => {
@@ -26,7 +27,14 @@ export default function FeaturedRaffles() {
         const rafflesData = await rafflesResponse.json()
         setRaffles(rafflesData)
 
-        // 2. Solo obtener top compradores si hay rifas activas
+        // 2. Obtener tasa de cambio
+        const exchangeResponse = await fetch("/api/exchange-rate")
+        if (exchangeResponse.ok) {
+          const exchangeData = await exchangeResponse.json()
+          setExchangeRate(exchangeData.rate || 36)
+        }
+
+        // 3. Solo obtener top compradores si hay rifas activas
         if (rafflesData.length > 0) {
           const topBuyersResponse = await fetch("/api/purchases/tops")
           if (!topBuyersResponse.ok) throw new Error("Error al cargar top compradores")
@@ -124,8 +132,8 @@ export default function FeaturedRaffles() {
                   {raffles[0].status === "active" ? "Activa" : raffles[0].status === "completed" ? "Finalizada" : "Cancelada"}
                 </Badge>
                 <span className="text-white text-lg">
-                  <DollarSign className="w-5 h-5 inline mr-1" />
-                  ${raffles[0].ticketPrice} por ticket
+                  <Coins className="w-5 h-5 inline mr-1" />
+                  Bs {(raffles[0].ticketPrice * exchangeRate).toLocaleString("es-VE")} por ticket
                 </span>
               </div>
             </div>
