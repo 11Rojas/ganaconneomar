@@ -12,7 +12,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Gana con Neomar - La Mejor Experiencia en Rifas Online",
   description: "Participa en rifas emocionantes con premios increíbles. Compra tus números de forma fácil y segura.",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
