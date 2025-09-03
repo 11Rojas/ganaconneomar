@@ -4,6 +4,7 @@ import { Purchase } from "@/models/Purchase"
 import { requireAdmin } from "@/lib/auth"
 import { User } from "@/models/User"
 import Raffle from "@/models/Raffle"
+import { sendPurchaseApprovalEmail } from "@/lib/mailer"
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,13 +14,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     await connectDB()
 
     const { id } = await params
-    const purchase = await Purchase.findByIdAndUpdate(id, { status: "approved" }, { new: true }).populate(
+    const purchase = await (Purchase as any).findByIdAndUpdate(id, { status: "approved" }, { new: true }).populate(
       "raffleId",
       "title",
     )
 
-    const user = await User.findById(purchase.userId)
-    const raffle = await Raffle.findById(purchase.raffleId)
+    const user = await (User as any).findById(purchase.userId)
+    const raffle = await (Raffle as any).findById(purchase.raffleId)
 
     if (!purchase) {
       return NextResponse.json({ error: "Compra no encontrada" }, { status: 404 })
@@ -78,6 +79,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       console.error("Error enviando mensaje por WhatsApp. Respuesta:", greenApiData)
     } else {
       console.log("Mensaje enviado con éxito. Respuesta:", greenApiData)
+    }
+
+    // Enviar email de aprobación
+    try {
+      if (purchase.paymentData?.email) {
+        await sendPurchaseApprovalEmail({
+          email: purchase.paymentData.email,
+          name: purchase.paymentData.name || 'Usuario',
+          raffleTitle: raffle.title,
+          numbers: purchase.numbers,
+          totalAmount: purchase.totalAmount,
+          paymentMethod: purchase.paymentMethod
+        })
+        console.log("Email de aprobación enviado exitosamente")
+      }
+    } catch (emailError) {
+      console.error("Error enviando email de aprobación:", emailError)
+      // No fallar la aprobación si el email falla
     }
 
     return NextResponse.json(purchase)

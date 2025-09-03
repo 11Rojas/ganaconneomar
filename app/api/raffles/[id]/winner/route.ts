@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import Raffle from "@/models/Raffle";
 import { Purchase } from "@/models/Purchase";
 import { requireAdmin } from "@/lib/auth";
+import { sendWinnerAnnouncementEmail } from "@/lib/mailer";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Validar que el número tenga 4 dígitos
  
 
-    const raffle = await Raffle.findById(id);
+    const raffle = await (Raffle as any).findById(id);
     if (!raffle) {
       return NextResponse.json({ error: "Rifa no encontrada" }, { status: 404 });
     }
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     // Buscar TODAS las compras aprobadas para esta rifa
-    const allPurchases = await Purchase.find({
+    const allPurchases = await (Purchase as any).find({
       raffleId: id,
       status: "approved"
     });
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const winnerData = winnerPurchase.paymentData;
 
     // Actualizar rifa con ganador (guardamos ambos formatos)
-    const updatedRaffle = await Raffle.findByIdAndUpdate(
+    const updatedRaffle = await (Raffle as any).findByIdAndUpdate(
       id,
       {
         status: "completed",
@@ -122,6 +123,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
     } catch (error) {
       console.error("Error al enviar WhatsApp:", error);
+    }
+
+    // Enviar email de anuncio de ganador
+    try {
+      if (winnerData.email) {
+        await sendWinnerAnnouncementEmail({
+          email: winnerData.email,
+          name: winnerData.name || 'Ganador',
+          raffleTitle: raffle.title,
+          winningNumber: parseInt(winningNumberInput),
+          prize: `Premio de la rifa ${raffle.title}`
+        })
+        console.log("Email de ganador enviado exitosamente")
+      }
+    } catch (emailError) {
+      console.error("Error enviando email de ganador:", emailError)
+      // No fallar el anuncio si el email falla
     }
 
     return NextResponse.json(updatedRaffle);
