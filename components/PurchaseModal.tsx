@@ -70,6 +70,24 @@ const paymentMethods: PaymentMethodConfig[] = [
       banco: "Banco de Venezuela"
     }
   },
+  {
+    id: "zelle",
+    name: "Zelle",
+    icon: Smartphone,
+    description: "Pago en Dolares via Zelle",
+    currency: "USD",
+    fields: [
+      { name: "name", label: "Nombre completo", required: true},
+      { name: "email", label: "Email", required: true},
+      { name: "phone", label: "Tu Teléfono", required: true },
+      { name: "reference", label: "Número de Referencia", required: true }
+    ],
+    accountDetails: {
+      telefono: "+1 (909) 955-4933",
+      nombre: "Aldemar Nuñez",
+      email: "aldemar@zelle.com"
+    }
+  },
 ]
 
 export default function RaffleCard({ raffle }: { raffle: Raffle }) {

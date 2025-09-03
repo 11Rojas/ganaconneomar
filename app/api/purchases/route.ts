@@ -4,6 +4,7 @@ import { Purchase } from "@/models/Purchase"
 import Raffle from "@/models/Raffle"
 import { requireAuth } from "@/lib/auth"
 import { v2 as cloudinary } from 'cloudinary'
+import { sendPurchaseNotification } from "@/lib/mailer"
 
 // Configura Cloudinary
 cloudinary.config({
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar paymentMethod
-    const validPaymentMethods = ["zelle", "pago-movil", "mercado-pago"]
+    const validPaymentMethods = ["zelle", "pago-movil", "pago-movil2", "mercado-pago"]
     if (!validPaymentMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: "Método de pago no válido" },
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar que la rifa existe y está activa
-    const raffle = await Raffle.findById(raffleId)
+    const raffle = await (Raffle as any).findById(raffleId)
     if (!raffle || raffle.status !== "active") {
       return NextResponse.json(
         { error: "Rifa no disponible" },
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
         ).end(buffer)
       })
 
-      receiptUrl = result?.secure_url || ""
+      receiptUrl = (result as any)?.secure_url || ""
     }
 
     // Calcular monto total
@@ -135,9 +136,25 @@ export async function POST(request: NextRequest) {
     await purchase.save()
 
     // Actualizar números vendidos
-    await Raffle.findByIdAndUpdate(raffleId, {
+    await (Raffle as any).findByIdAndUpdate(raffleId, {
       $addToSet: { soldNumbers: { $each: assignedNumbers } },
     })
+
+    // Enviar notificación por email
+    try {
+      await sendPurchaseNotification({
+        email: paymentData.email || '',
+        name: paymentData.name || 'Usuario',
+        raffleTitle: raffle.title,
+        numbers: assignedNumbers.map(Number),
+        totalAmount,
+        paymentMethod,
+        reference: paymentData.reference || ''
+      })
+    } catch (emailError) {
+      console.error('Error sending email notification:', emailError)
+      // No fallar la compra si el email falla
+    }
 
     return NextResponse.json({
       ...purchase.toObject(),
@@ -171,7 +188,7 @@ export async function GET(request: NextRequest) {
 
     if (status) query.status = status
 
-    const purchases = await Purchase.find(query)
+    const purchases = await (Purchase as any).find(query)
       .populate("raffleId", "title image drawDate")
       .sort({ createdAt: -1 })
 
