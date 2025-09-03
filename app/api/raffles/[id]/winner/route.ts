@@ -127,7 +127,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Enviar email de anuncio de ganador
     try {
-      if (winnerData.email) {
+      if (winnerData?.email && winnerData.email.trim() !== '') {
         await sendWinnerAnnouncementEmail({
           email: winnerData.email,
           name: winnerData.name || 'Ganador',
@@ -136,6 +136,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           prize: `Premio de la rifa ${raffle.title}`
         })
         console.log("Email de ganador enviado exitosamente")
+      } else {
+        console.log("No hay email válido para enviar notificación al ganador")
       }
     } catch (emailError) {
       console.error("Error enviando email de ganador:", emailError)

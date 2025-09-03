@@ -6,14 +6,13 @@ import { Badge } from "@/components/ui/badge"
 import { Trophy, Medal, Award, Users } from "lucide-react"
 
 interface TopBuyer {
-  _id: string
+  _id?: string
   totalNumbers: number
-  totalPurchases: number
-  totalAmount: number
-  paymentData: {
-    email?: string
-    phone?: string
-  }
+  totalPurchases?: number
+  totalAmount?: number
+  name: string
+  email?: string
+  phone?: string
 }
 
 export default function TopBuyers() {
@@ -64,8 +63,8 @@ export default function TopBuyers() {
     }
   }
 
-  const maskEmail = (email: string) => {
-    if (!email) return "Usuario"
+  const maskEmail = (email: string | undefined) => {
+    if (!email || email.trim() === "") return "Usuario"
     const [username, domain] = email.split("@")
     if (username.length <= 2) return email
     return `${username.substring(0, 2)}***@${domain}`
@@ -113,29 +112,32 @@ export default function TopBuyers() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {topBuyers.map((buyer, index) => (
-            <div
-              key={buyer._id}
-              className={`flex items-center justify-between p-4 rounded-lg ${getRankColor(index)} text-white`}
-            >
+                 <div className="space-y-4">
+           {topBuyers
+             .filter(buyer => buyer && buyer.name) // Filtrar compradores válidos
+             .map((buyer, index) => (
+             <div
+               key={buyer._id || `buyer-${index}`}
+               className={`flex items-center justify-between p-4 rounded-lg ${getRankColor(index)} text-white`}
+             >
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">
                   {getRankIcon(index)}
                 </div>
-                <div>
-                  <p className="font-semibold">{maskEmail(buyer.paymentData.email || "")}</p>
-                  <p className="text-sm opacity-90">
-                    {buyer.totalNumbers} números • {buyer.totalPurchases} compras
-                  </p>
-                </div>
+                                 <div>
+                   <p className="font-semibold">
+                     {buyer.name || "Usuario"}
+                   </p>
+                   <p className="text-sm opacity-90">
+                     {buyer.totalNumbers} números • {buyer.totalPurchases || 1} compras
+                   </p>
+                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-lg">${buyer.totalAmount.toFixed(2)}</p>
-                <Badge className="bg-white/20 text-white border-0">
-                  #{index + 1}
-                </Badge>
-              </div>
+                             <div className="text-right">
+                 <Badge className="bg-white/20 text-white border-0">
+                   #{index + 1}
+                 </Badge>
+               </div>
             </div>
           ))}
         </div>

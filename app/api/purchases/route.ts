@@ -43,9 +43,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar paymentData según el método
-    if (paymentMethod === "pago-movil" && !paymentData.reference) {
+    if ((paymentMethod === "pago-movil" || paymentMethod === "pago-movil2" || paymentMethod === "zelle") && !paymentData.reference) {
       return NextResponse.json(
-        { error: "La referencia es requerida para Pago Móvil" },
+        { error: "La referencia es requerida para este método de pago" },
         { status: 400 }
       )
     }

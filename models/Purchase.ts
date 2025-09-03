@@ -21,7 +21,7 @@ const PurchaseSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["zelle", "pago-movil", "mercado-pago"],
+      enum: ["zelle", "pago-movil", "pago-movil2", "mercado-pago"],
       required: true,
     },
     paymentData: {
@@ -30,7 +30,7 @@ const PurchaseSchema = new mongoose.Schema(
       phone: String,
       reference: {
         type: String,
-        required: true,
+        required: false,
       },
       receipt: String,
       notes: String,
