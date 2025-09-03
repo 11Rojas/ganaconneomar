@@ -7,6 +7,7 @@ import { Instagram, Facebook, Coins } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import TikTok from "./Tiktok"
+import TopBuyers from "./TopBuyers"
 
 export default function FeaturedRaffles() {
   const [raffles, setRaffles] = useState<Raffle[]>([])
@@ -143,20 +144,32 @@ export default function FeaturedRaffles() {
 
       <div className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          {raffles.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400 text-lg mb-4">No hay rifas activas en este momento</p>
-              <p className="text-gray-500">Vuelve más tarde para ver nuevas rifas</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-8 w-full">
-              {raffles.map((raffle) => (
-                <div key={raffle._id} className="w-full">
-                  <PurchaseModal raffle={raffle} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content - Rifas */}
+            <div className="lg:col-span-2">
+              {raffles.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-400 text-lg mb-4">No hay rifas activas en este momento</p>
+                  <p className="text-gray-500">Vuelve más tarde para ver nuevas rifas</p>
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-8">
+                  {raffles.map((raffle) => (
+                    <div key={raffle._id} className="w-full">
+                      <PurchaseModal raffle={raffle} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Sidebar - Top Buyers */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-8">
+                <TopBuyers />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

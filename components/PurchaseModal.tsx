@@ -75,7 +75,7 @@ const paymentMethods: PaymentMethodConfig[] = [
 export default function RaffleCard({ raffle }: { raffle: Raffle }) {
   const { data: session } = useSession()
   const [soldPercentage, setSoldPercentage] = useState(0)
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('pago-movil')
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('pago-movil2')
   const [quantity, setQuantity] = useState(1)
   const [receipt, setReceipt] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -355,28 +355,30 @@ export default function RaffleCard({ raffle }: { raffle: Raffle }) {
             </div>
           ))}
 
-          <div>
-            <Label>Comprobante de pago *</Label>
-            <div className="mt-1">
-            <input
-  type="file"
-  accept="image/png, image/jpg, image/jpeg"
-  onChange={handleFileUpload}
-  className="hidden"
-  id={`receipt-${raffle._id}`}
-  required
-/>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById(`receipt-${raffle._id}`)?.click()}
-                className="w-full"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                {receipt ? receipt.name : "Subir Comprobante"}
-              </Button>
+          {selectedPayment && (
+            <div>
+              <Label>Comprobante de pago *</Label>
+              <div className="mt-1">
+              <input
+    type="file"
+    accept="image/png, image/jpg, image/jpeg"
+    onChange={handleFileUpload}
+    className="hidden"
+    id={`receipt-${raffle._id}`}
+    required
+  />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById(`receipt-${raffle._id}`)?.click()}
+                  className="w-full"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {receipt ? receipt.name : "Subir Comprobante"}
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
            <span className="text-gray-300">
