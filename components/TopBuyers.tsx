@@ -6,12 +6,11 @@ import { Badge } from "@/components/ui/badge"
 import { Trophy, Medal, Award, Users } from "lucide-react"
 
 interface TopBuyer {
-  _id?: string
+  email: string
   totalNumbers: number
-  totalPurchases?: number
-  totalAmount?: number
+  totalPurchases: number
+  totalAmount: number
   name: string
-  email?: string
   phone?: string
 }
 
@@ -117,7 +116,7 @@ export default function TopBuyers() {
              .filter(buyer => buyer && buyer.name) // Filtrar compradores válidos
              .map((buyer, index) => (
              <div
-               key={buyer._id || `buyer-${index}`}
+               key={buyer.email || `buyer-${index}`}
                className={`flex items-center justify-between p-4 rounded-lg ${getRankColor(index)} text-white`}
              >
               <div className="flex items-center gap-3">
@@ -129,7 +128,7 @@ export default function TopBuyers() {
                      {buyer.name || "Usuario"}
                    </p>
                    <p className="text-sm opacity-90">
-                     {buyer.totalNumbers} números • {buyer.totalPurchases || 1} compras
+                     {buyer.totalNumbers} números • {buyer.totalPurchases} compras
                    </p>
                  </div>
               </div>
